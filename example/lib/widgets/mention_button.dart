@@ -28,12 +28,12 @@ class _MentionButtonState extends State<MentionButton> {
   @override
   Widget build(BuildContext context) {
     theme = Theme.of(context);
-    _setIconColor();
+    //_setIconColor();
 
     final fillColor = theme.canvasColor;
-    widget.controller.changes.listen((event) async {
+    /* widget.controller.changes.listen((event) async {
       _setIconColor();
-    });
+    });*/
     return quill.QuillIconButton(
       highlightElevation: 0,
       hoverElevation: 0,
@@ -93,7 +93,7 @@ class _MentionButtonState extends State<MentionButton> {
     );
   }
 
-  void _setIconColor() {
+  /*void _setIconColor() {
     if (!mounted) return;
 
     if (widget.undo) {
@@ -107,5 +107,5 @@ class _MentionButtonState extends State<MentionButton> {
         _iconColor = theme.iconTheme.color;
       });
     }
-  }
+  }*/
 }
