@@ -44,30 +44,29 @@ class DefaultTextBlockStyle {
 }
 
 class DefaultStyles {
-  DefaultStyles({
-    this.h1,
-    this.h2,
-    this.h3,
-    this.paragraph,
-    this.bold,
-    this.italic,
-    this.underline,
-    this.strikeThrough,
-    this.link,
-    this.color,
-    this.placeHolder,
-    this.lists,
-    this.quote,
-    this.code,
-    this.indent,
-    this.align,
-    this.leading,
-    this.sizeSmall,
-    this.sizeLarge,
-    this.sizeHuge,
-    this.hashtag,
-    this.mention
-  });
+  DefaultStyles(
+      {this.h1,
+      this.h2,
+      this.h3,
+      this.paragraph,
+      this.bold,
+      this.italic,
+      this.underline,
+      this.strikeThrough,
+      this.link,
+      this.color,
+      this.placeHolder,
+      this.lists,
+      this.quote,
+      this.code,
+      this.indent,
+      this.align,
+      this.leading,
+      this.sizeSmall,
+      this.sizeLarge,
+      this.sizeHuge,
+      this.hashtag,
+      this.mention});
 
   final DefaultTextBlockStyle? h1;
   final DefaultTextBlockStyle? h2;
@@ -198,13 +197,13 @@ class DefaultStyles {
             baseStyle, const Tuple2(0, 0), const Tuple2(0, 0), null),
         sizeSmall: const TextStyle(fontSize: 10),
         sizeLarge: const TextStyle(fontSize: 18),
-        sizeHuge: const TextStyle(fontSize: 22));
-    mention: const TextStyle(
-      color: Colors.red,
-    ),
-    hashtag: const TextStyle(
-    color: Colors.green,
-    ),
+        sizeHuge: const TextStyle(fontSize: 22),
+        mention: const TextStyle(
+          color: Colors.red,
+        ),
+        hashtag: const TextStyle(
+          color: Colors.green,
+        ));
   }
 
   DefaultStyles merge(DefaultStyles other) {
@@ -230,6 +229,6 @@ class DefaultStyles {
         sizeLarge: other.sizeLarge ?? sizeLarge,
         sizeHuge: other.sizeHuge ?? sizeHuge,
         mention: other.mention ?? mention,
-        hashtag: other.hashtag ?? hashtag));
+        hashtag: other.hashtag ?? hashtag);
   }
 }
