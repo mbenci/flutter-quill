@@ -37,6 +37,8 @@ class Attribute<T> {
     Attribute.height.key: Attribute.height,
     Attribute.style.key: Attribute.style,
     Attribute.token.key: Attribute.token,
+    Attribute.hashtag.key: Attribute.hashtag,
+    Attribute.mention.key: Attribute.mention,
   });
 
   static final BoldAttribute bold = BoldAttribute();
@@ -78,6 +80,10 @@ class Attribute<T> {
   static final StyleAttribute style = StyleAttribute(null);
 
   static final TokenAttribute token = TokenAttribute('');
+
+  static final HashtagAttribute hashtag = HashtagAttribute();
+
+  static final MentionAttribute mention = MentionAttribute();
 
   static final Set<String> inlineKeys = {
     Attribute.bold.key,
@@ -289,4 +295,12 @@ class StyleAttribute extends Attribute<String?> {
 
 class TokenAttribute extends Attribute<String> {
   TokenAttribute(String val) : super('token', AttributeScope.IGNORE, val);
+}
+
+class HashtagAttribute extends Attribute<bool> {
+  HashtagAttribute() : super('hashtag', AttributeScope.INLINE, true);
+}
+
+class MentionAttribute extends Attribute<bool> {
+  MentionAttribute() : super('mention', AttributeScope.INLINE, true);
 }

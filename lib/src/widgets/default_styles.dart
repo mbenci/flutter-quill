@@ -65,6 +65,8 @@ class DefaultStyles {
     this.sizeSmall,
     this.sizeLarge,
     this.sizeHuge,
+    this.hashtag,
+    this.mention
   });
 
   final DefaultTextBlockStyle? h1;
@@ -87,6 +89,8 @@ class DefaultStyles {
   final DefaultTextBlockStyle? indent;
   final DefaultTextBlockStyle? align;
   final DefaultTextBlockStyle? leading;
+  final TextStyle? hashtag;
+  final TextStyle? mention;
 
   static DefaultStyles getInstance(BuildContext context) {
     final themeData = Theme.of(context);
@@ -195,6 +199,12 @@ class DefaultStyles {
         sizeSmall: const TextStyle(fontSize: 10),
         sizeLarge: const TextStyle(fontSize: 18),
         sizeHuge: const TextStyle(fontSize: 22));
+    mention: const TextStyle(
+      color: Colors.red,
+    ),
+    hashtag: const TextStyle(
+    color: Colors.green,
+    ),
   }
 
   DefaultStyles merge(DefaultStyles other) {
@@ -218,6 +228,8 @@ class DefaultStyles {
         leading: other.leading ?? leading,
         sizeSmall: other.sizeSmall ?? sizeSmall,
         sizeLarge: other.sizeLarge ?? sizeLarge,
-        sizeHuge: other.sizeHuge ?? sizeHuge);
+        sizeHuge: other.sizeHuge ?? sizeHuge,
+        mention: other.mention ?? mention,
+        hashtag: other.hashtag ?? hashtag));
   }
 }
