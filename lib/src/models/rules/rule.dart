@@ -46,6 +46,7 @@ class Rules {
     const CatchAllInsertRule(),
     const EnsureEmbedLineRule(),
     const PreserveLineStyleOnMergeRule(),
+    const HashtagAndMentionDeleteRule(),
     const CatchAllDeleteRule(),
   ]);
 

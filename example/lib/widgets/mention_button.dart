@@ -28,12 +28,9 @@ class _MentionButtonState extends State<MentionButton> {
   @override
   Widget build(BuildContext context) {
     theme = Theme.of(context);
-    //_setIconColor();
 
     final fillColor = theme.canvasColor;
-    /* widget.controller.changes.listen((event) async {
-      _setIconColor();
-    });*/
+
     return quill.QuillIconButton(
       highlightElevation: 0,
       hoverElevation: 0,
@@ -45,7 +42,7 @@ class _MentionButtonState extends State<MentionButton> {
             context: context,
             builder: (context) {
               return AlertDialog(
-                title: const Text('Mention List'),
+                title: const Text('Mentions List'),
                 content: setupAlertDialoadContainer(),
                 actions: <Widget>[
                   TextButton(
@@ -59,19 +56,26 @@ class _MentionButtonState extends State<MentionButton> {
               );
             }).then((val) {
           final start = widget.controller.selection.start;
-          final end = widget.controller.selection.end -
-              widget.controller.selection.start;
-          final length = start + '@mention '.length;
+          final length = start + '#mention'.length;
 
           widget.controller.replaceText(
             start,
-            end,
-            '@mention ',
+            0,
+            '#mention',
             TextSelection.collapsed(offset: length),
           );
-          //print(widget.controller.document.toPlainText());
+
           widget.controller
-              .formatText(start, '@mention'.length, widget.attribute);
+              .formatText(start, '#mention'.length, quill.Attribute.mention);
+
+          widget.controller.replaceText(
+            length,
+            0,
+            ' ',
+            TextSelection.collapsed(offset: length + 1),
+          );
+          widget.controller.formatText(length, ' '.length,
+              quill.Attribute.clone(quill.Attribute.mention, null));
         });
       },
     );
@@ -92,20 +96,4 @@ class _MentionButtonState extends State<MentionButton> {
       ),
     );
   }
-
-  /*void _setIconColor() {
-    if (!mounted) return;
-
-    if (widget.undo) {
-      setState(() {
-        _iconColor = widget.controller.hasUndo
-            ? theme.iconTheme.color
-            : theme.disabledColor;
-      });
-    } else {
-      setState(() {
-        _iconColor = theme.iconTheme.color;
-      });
-    }
-  }*/
 }

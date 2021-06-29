@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:tuple/tuple.dart';
 
+import '../../flutter_quill.dart';
 import '../models/documents/attribute.dart';
 import '../models/documents/document.dart';
 import '../models/documents/nodes/block.dart';
@@ -125,6 +126,9 @@ class RawEditorState extends EditorState
   bool get _hasFocus => widget.focusNode.hasFocus;
 
   DefaultStyles? _styles;
+  String prevText = '';
+  int prevLength = 0;
+  int prevCursorPosition = 0;
 
   final ClipboardStatusNotifier _clipboardStatus = ClipboardStatusNotifier();
   final LayerLink _toolbarLayerLink = LayerLink();
@@ -201,7 +205,6 @@ class RawEditorState extends EditorState
   void _handleSelectionChanged(
       TextSelection selection, SelectionChangedCause cause) {
     widget.controller.updateSelection(selection, ChangeSource.LOCAL);
-
     _selectionOverlay?.handlesVisible = _shouldShowSelectionHandles();
 
     if (!_keyboardVisible) {
@@ -316,6 +319,9 @@ class RawEditorState extends EditorState
   @override
   void initState() {
     super.initState();
+
+    prevText = widget.controller.document.toPlainText();
+    prevLength = widget.controller.document.toPlainText().length;
 
     _clipboardStatus.addListener(_onChangedClipboardStatus);
 
@@ -447,7 +453,39 @@ class RawEditorState extends EditorState
     _selectionOverlay?.markNeedsBuild();
   }
 
+  void _checkIfIsHashtagOrMentionRemoving() {
+    final selection = widget.controller.selection;
+    final cursorPosition = selection.start;
+    final diff = prevLength - widget.controller.document.toPlainText().length;
+    final pos = cursorPosition - diff + 1;
+
+    /*
+    print('prevLength--> $prevLength');
+    print('length--> ${widget.controller.document.toPlainText().length}');
+    print('cursorPosition--> $cursorPosition');
+    print('prevCursorPosition--> $prevCursorPosition');
+    print('diff--> $diff');
+    print('pos--> $pos');
+    if (prevText != null && prevText.isNotEmpty) {
+      print('isHashtag --> ${prevText[pos]}');
+    }
+    */
+
+    if (prevText.isNotEmpty &&
+        cursorPosition == prevCursorPosition &&
+        diff > 2 &&
+        (prevText[pos] == '#' || prevText[pos] == '@')) {
+      widget.controller
+          .replaceText(pos, 0, '', TextSelection.collapsed(offset: pos));
+    }
+
+    prevText = widget.controller.document.toPlainText();
+    prevLength = widget.controller.document.toPlainText().length;
+    prevCursorPosition = cursorPosition;
+  }
+
   void _didChangeTextEditingValue([bool ignoreFocus = false]) {
+    _updateOrDisposeSelectionOverlayIfNeeded();
     if (kIsWeb) {
       _onChangeTextEditingValue(ignoreFocus);
       if (!ignoreFocus) {
@@ -469,7 +507,9 @@ class RawEditorState extends EditorState
     }
   }
 
-  void _onChangeTextEditingValue([bool ignoreCaret = false]) {
+  Future<void> _onChangeTextEditingValue([bool ignoreCaret = false]) async {
+    _checkIfIsHashtagOrMentionRemoving();
+
     updateRemoteValueIfNeeded();
     if (ignoreCaret) {
       return;

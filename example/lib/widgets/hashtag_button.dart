@@ -28,12 +28,9 @@ class _HashtagButtonState extends State<HashtagButton> {
   @override
   Widget build(BuildContext context) {
     theme = Theme.of(context);
-    // _setIconColor();
 
     final fillColor = theme.canvasColor;
-    /*widget.controller.changes.listen((event) async {
-      _setIconColor();
-    });*/
+
     return quill.QuillIconButton(
       highlightElevation: 0,
       hoverElevation: 0,
@@ -59,19 +56,26 @@ class _HashtagButtonState extends State<HashtagButton> {
               );
             }).then((val) {
           final start = widget.controller.selection.start;
-          final end = widget.controller.selection.end -
-              widget.controller.selection.start;
-          final length = start + '@hashtag '.length;
+          final length = start + '#hashtag'.length;
 
           widget.controller.replaceText(
             start,
-            end,
-            '#hashtag ',
+            0,
+            '#hashtag',
             TextSelection.collapsed(offset: length),
           );
-          //print(widget.controller.document.toPlainText());
+
           widget.controller
-              .formatText(start, '@hashtag'.length, widget.attribute);
+              .formatText(start, '#hashtag'.length, quill.Attribute.hashtag);
+
+          widget.controller.replaceText(
+            length,
+            0,
+            ' ',
+            TextSelection.collapsed(offset: length + 1),
+          );
+          widget.controller.formatText(length, ' '.length,
+              quill.Attribute.clone(quill.Attribute.hashtag, null));
         });
       },
     );
@@ -92,20 +96,4 @@ class _HashtagButtonState extends State<HashtagButton> {
       ),
     );
   }
-
-  /* void _setIconColor() {
-    if (!mounted) return;
-
-    if (widget.undo) {
-      setState(() {
-        _iconColor = widget.controller.hasUndo
-            ? theme.iconTheme.color
-            : theme.disabledColor;
-      });
-    } else {
-      setState(() {
-        _iconColor = theme.iconTheme.color;
-      });
-    }
-  }*/
 }

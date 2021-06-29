@@ -1,3 +1,6 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_quill/flutter_quill.dart';
+
 import '../documents/attribute.dart';
 import '../quill_delta.dart';
 import 'rule.dart';
@@ -70,6 +73,27 @@ class PreserveLineStyleOnMergeRule extends DeleteRule {
       break;
     }
     return delta;
+  }
+}
+
+class HashtagAndMentionDeleteRule extends DeleteRule {
+  const HashtagAndMentionDeleteRule();
+
+  @override
+  Delta? applyRule(Delta document, int index,
+      {int? len, Object? data, Attribute? attribute}) {
+    final itr = DeltaIterator(document)..skip(index);
+
+    var op = itr.next(1);
+    if (op.attributes == null ||
+        (op.attributes!.isNotEmpty &&
+            !op.attributes!.containsKey(Attribute.hashtag.key))) {
+      return null;
+    }
+    len = DeltaIterator(document).skip(index)!.data.toString().length + 1;
+    return Delta()
+      ..retain(index + 1 - len)
+      ..delete(len);
   }
 }
 
