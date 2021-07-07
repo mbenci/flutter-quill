@@ -1,0 +1,102 @@
+[
+   {
+      "insert":"This "
+   },
+   {
+      "attributes":{
+         "italic":true,
+         "background":"transparent"
+      },
+      "insert":"library"
+   },
+   {
+      "insert":" supports "
+   },
+   {
+      "attributes":{
+         "bold":true,
+         "background":"#ebd6ff"
+      },
+      "insert":"mobile"
+   },
+   {
+      "insert":" platform "
+   },
+   {
+      "attributes":{
+         "underline":true,
+         "bold":true,
+         "color":"#e60000"
+      },
+      "insert":"only"
+   },
+   {
+      "attributes":{
+         "color":"rgba(0, 0, 0, 0.847)"
+      },
+      "insert":" and "
+   },
+   {
+      "attributes":{
+         "strike":true,
+         "color":"black"
+      },
+      "insert":"web"
+   },
+   {
+      "insert":" "
+   },
+   {
+      "attributes":{
+         "hashtag":"123",
+         "color":"green"
+      },
+      "insert":"#hashtag"
+   },
+   {
+      "insert":" "
+   },
+   {
+      "attributes":{
+         "mention":"456",
+         "color":"red"
+      },
+      "insert":"@mention"
+   },
+   {
+      "insert":" is not supported.\nYou are welcome to use "
+   },
+   {
+      "attributes":{
+         "link":"https://bulletjournal.us/home/index.html"
+      },
+      "insert":"Bullet Journal"
+   },
+   {
+      "insert":":\nTrack personal and group journals (ToDo, Note, Ledger) from multiple views with timely reminders"
+   },
+   {
+      "attributes":{
+         "list":"ordered"
+      },
+      "insert":"\n"
+   },
+   {
+      "insert":"Share your tasks and notes with teammates, and see changes as they happen in real-time, across all devices"
+   },
+   {
+      "attributes":{
+         "list":"ordered"
+      },
+      "insert":"\n"
+   },
+   {
+      "insert":"Check out what you and your teammates are working on each day"
+   },
+   {
+      "attributes":{
+         "list":"ordered"
+      },
+      "insert":"\n"
+   }
+]

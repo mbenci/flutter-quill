@@ -9,6 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:flutter_quill/src/utils/interacta.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../flutter_quill.dart';
@@ -58,6 +59,7 @@ class RawEditor extends StatefulWidget {
     this.enableInteractiveSelection,
     this.scrollPhysics,
     this.embedBuilder,
+    this.callback,
   )   : assert(maxHeight == null || maxHeight > 0, 'maxHeight cannot be null'),
         assert(minHeight == null || minHeight >= 0, 'minHeight cannot be null'),
         assert(maxHeight == null || minHeight == null || maxHeight >= minHeight,
@@ -90,6 +92,7 @@ class RawEditor extends StatefulWidget {
   final bool enableInteractiveSelection;
   final ScrollPhysics? scrollPhysics;
   final EmbedBuilder embedBuilder;
+  final void Function(bool, String?) callback;
 
   @override
   State<StatefulWidget> createState() => RawEditorState();
@@ -111,6 +114,8 @@ class RawEditorState extends EditorState
   StreamSubscription<bool>? _keyboardVisibilitySubscription;
   bool _keyboardVisible = false;
 
+  InteractaInfo? interactaInfo;
+
   // Selection overlay
   @override
   EditorTextSelectionOverlay? getSelectionOverlay() => _selectionOverlay;
@@ -126,9 +131,6 @@ class RawEditorState extends EditorState
   bool get _hasFocus => widget.focusNode.hasFocus;
 
   DefaultStyles? _styles;
-  String prevText = '';
-  int prevLength = 0;
-  int prevCursorPosition = 0;
 
   final ClipboardStatusNotifier _clipboardStatus = ClipboardStatusNotifier();
   final LayerLink _toolbarLayerLink = LayerLink();
@@ -320,8 +322,10 @@ class RawEditorState extends EditorState
   void initState() {
     super.initState();
 
-    prevText = widget.controller.document.toPlainText();
-    prevLength = widget.controller.document.toPlainText().length;
+    interactaInfo = InteractaInfo(
+        prevText: widget.controller.document.toPlainText(),
+        prevLength: widget.controller.document.toPlainText().length,
+        prevCursorPosition: 0);
 
     _clipboardStatus.addListener(_onChangedClipboardStatus);
 
@@ -453,37 +457,6 @@ class RawEditorState extends EditorState
     _selectionOverlay?.markNeedsBuild();
   }
 
-  void _checkIfIsHashtagOrMentionRemoving() {
-    final selection = widget.controller.selection;
-    final cursorPosition = selection.start;
-    final diff = prevLength - widget.controller.document.toPlainText().length;
-    final pos = cursorPosition - diff + 1;
-
-    /*
-    print('prevLength--> $prevLength');
-    print('length--> ${widget.controller.document.toPlainText().length}');
-    print('cursorPosition--> $cursorPosition');
-    print('prevCursorPosition--> $prevCursorPosition');
-    print('diff--> $diff');
-    print('pos--> $pos');
-    if (prevText != null && prevText.isNotEmpty) {
-      print('isHashtag --> ${prevText[pos]}');
-    }
-    */
-
-    if (prevText.isNotEmpty &&
-        cursorPosition == prevCursorPosition &&
-        diff > 2 &&
-        (prevText[pos] == '#' || prevText[pos] == '@')) {
-      widget.controller
-          .replaceText(pos, 0, '', TextSelection.collapsed(offset: pos));
-    }
-
-    prevText = widget.controller.document.toPlainText();
-    prevLength = widget.controller.document.toPlainText().length;
-    prevCursorPosition = cursorPosition;
-  }
-
   void _didChangeTextEditingValue([bool ignoreFocus = false]) {
     _updateOrDisposeSelectionOverlayIfNeeded();
     if (kIsWeb) {
@@ -508,7 +481,8 @@ class RawEditorState extends EditorState
   }
 
   Future<void> _onChangeTextEditingValue([bool ignoreCaret = false]) async {
-    _checkIfIsHashtagOrMentionRemoving();
+    interactaInfo = interactChecks(
+        widget.controller, getRenderEditor(), interactaInfo, widget.callback);
 
     updateRemoteValueIfNeeded();
     if (ignoreCaret) {

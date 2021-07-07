@@ -1,5 +1,8 @@
+import 'package:app/widgets/hashtag_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
+
+import '../util.dart';
 
 class HashtagButton extends StatefulWidget {
   const HashtagButton({
@@ -38,62 +41,8 @@ class _HashtagButtonState extends State<HashtagButton> {
       icon: Icon(widget.icon, size: widget.iconSize, color: _iconColor),
       fillColor: fillColor,
       onPressed: () {
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text('Hashtags List'),
-                content: setupAlertDialoadContainer(),
-                actions: <Widget>[
-                  TextButton(
-                    child: const Text('ok'),
-                    onPressed: () {
-                      Navigator.of(context).pop(true);
-                      // true here means you clicked ok
-                    },
-                  ),
-                ],
-              );
-            }).then((val) {
-          final start = widget.controller.selection.start;
-          final length = start + '#hashtag'.length;
-
-          widget.controller.replaceText(
-            start,
-            0,
-            '#hashtag',
-            TextSelection.collapsed(offset: length),
-          );
-
-          widget.controller
-              .formatText(start, '#hashtag'.length, quill.Attribute.hashtag);
-
-          widget.controller.replaceText(
-            length,
-            0,
-            ' ',
-            TextSelection.collapsed(offset: length + 1),
-          );
-          widget.controller.formatText(length, ' '.length,
-              quill.Attribute.clone(quill.Attribute.hashtag, null));
-        });
+        showHashtagDialog(context, widget.controller);
       },
-    );
-  }
-
-  Widget setupAlertDialoadContainer() {
-    return Container(
-      height: 300, // Change as per your requirement
-      width: 300, // Change as per your requirement
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: 5,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text('hashtag$index'),
-          );
-        },
-      ),
     );
   }
 }

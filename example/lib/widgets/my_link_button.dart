@@ -50,15 +50,11 @@ class _MyLinkButtonState extends State<MyLinkButton> {
     final theme = Theme.of(context);
     if (!widget.controller.selection.isCollapsed) {
       var attributes = widget.controller.getSelectionStyle().attributes;
-      print('build attributes --> $attributes');
       if (attributes.isNotEmpty) {
-        print('build attributes --> $attributes');
         attributes.forEach((key, value) {
           if (key == 'link') {
             linkValue =
                 widget.controller.getSelectionStyle().attributes['link']!.value;
-
-            print('build linkValue --> $linkValue');
             return;
           }
         });

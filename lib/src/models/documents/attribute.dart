@@ -81,9 +81,9 @@ class Attribute<T> {
 
   static final TokenAttribute token = TokenAttribute('');
 
-  static final HashtagAttribute hashtag = HashtagAttribute();
+  static final HashtagAttribute hashtag = HashtagAttribute(null);
 
-  static final MentionAttribute mention = MentionAttribute();
+  static final MentionAttribute mention = MentionAttribute(null);
 
   static final Set<String> inlineKeys = {
     Attribute.bold.key,
@@ -297,10 +297,10 @@ class TokenAttribute extends Attribute<String> {
   TokenAttribute(String val) : super('token', AttributeScope.IGNORE, val);
 }
 
-class HashtagAttribute extends Attribute<bool> {
-  HashtagAttribute() : super('hashtag', AttributeScope.INLINE, true);
+class HashtagAttribute extends Attribute<String?> {
+  HashtagAttribute(String? val) : super('hashtag', AttributeScope.INLINE, val);
 }
 
-class MentionAttribute extends Attribute<bool> {
-  MentionAttribute() : super('mention', AttributeScope.INLINE, true);
+class MentionAttribute extends Attribute<String?> {
+  MentionAttribute(String? val) : super('mention', AttributeScope.INLINE, val);
 }

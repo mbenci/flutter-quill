@@ -110,9 +110,55 @@ class ResolveInlineFormatRule extends FormatRule {
     Operation op;
     for (var cur = 0; cur < len! && itr.hasNext; cur += op.length!) {
       op = itr.next(len - cur);
+      var cond = true;
+      var isHashtagOrMentionOrLink = false;
+
+      print('attributes --> ${op.attributes}');
+      print('data --> ${op.data}');
+      print('length --> ${op.length}');
+
+      isHashtagOrMentionOrLink = op.attributes != null &&
+          op.attributes!.isNotEmpty &&
+          op.attributes!.containsKey(Attribute.hashtag.key) &&
+          op.attributes!.containsKey(Attribute.mention.key) &&
+          op.attributes!.containsKey(Attribute.link.key);
+
+      /*final isNewHashtagOrMentionOrLink = op.attributes != null &&
+              op.attributes!.isNotEmpty &&
+              (op.attributes!.containsKey(Attribute.hashtag.key) &&
+                  attribute.key == Attribute.hashtag.key) ||
+          (op.attributes!.containsKey(Attribute.mention.key) &&
+              attribute.key == Attribute.mention.key) ||
+          (op.attributes!.containsKey(Attribute.link.key) &&
+              attribute.key == Attribute.link.key);*/
+
+      cond = op.attributes == null ||
+          op.attributes!.isEmpty ||
+          (!op.attributes!.containsKey(Attribute.hashtag.key) &&
+              !op.attributes!.containsKey(Attribute.mention.key) &&
+              !op.attributes!.containsKey(Attribute.link.key)) ||
+          ((op.attributes!.containsKey(Attribute.hashtag.key) &&
+                  attribute.key == Attribute.hashtag.key) ||
+              (op.attributes!.containsKey(Attribute.mention.key) &&
+                  attribute.key == Attribute.mention.key) ||
+              (op.attributes!.containsKey(Attribute.link.key) &&
+                  attribute.key == Attribute.link.key));
+
+      print('isHashtagOrMentionOrLink --> $isHashtagOrMentionOrLink');
+      print('cond --> $cond');
+      print('___________________');
+
       final text = op.data is String ? (op.data as String?)! : '';
       var lineBreak = text.indexOf('\n');
-      if (lineBreak < 0) {
+      if (!cond) {
+        delta.retain(op.length!);
+        continue;
+      } else if (isHashtagOrMentionOrLink) {
+        delta
+          ..delete(op.length!)
+          ..insert(op.data, attribute.toJson());
+        continue;
+      } else if (lineBreak < 0) {
         delta.retain(op.length!, attribute.toJson());
         continue;
       }
@@ -122,7 +168,7 @@ class ResolveInlineFormatRule extends FormatRule {
         pos = lineBreak + 1;
         lineBreak = text.indexOf('\n', pos);
       }
-      if (pos < op.length!) {
+      if (pos < op.length! && cond) {
         delta.retain(op.length! - pos, attribute.toJson());
       }
     }

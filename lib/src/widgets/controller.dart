@@ -61,6 +61,10 @@ class QuillController extends ChangeNotifier {
         .mergeAll(toggledStyle);
   }
 
+  Style getSelectionStyleRange(int start, int end) {
+    return document.collectStyle(start, end - start).mergeAll(toggledStyle);
+  }
+
   void undo() {
     final tup = document.undo();
     if (tup.item1) {

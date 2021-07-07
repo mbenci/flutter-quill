@@ -13,6 +13,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tuple/tuple.dart';
 
 import '../universal_ui/universal_ui.dart';
+import '../util.dart';
 import 'read_only_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,6 +24,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   QuillController? _controller;
   final FocusNode _focusNode = FocusNode();
+  final GlobalKey<EditorState> _editorKey = GlobalKey<EditorState>();
+
+  BuildContext? context2;
 
   @override
   void initState() {
@@ -30,9 +34,20 @@ class _HomePageState extends State<HomePage> {
     _loadFromAssets();
   }
 
+  VoidCallback? callBack(bool isHashtag, String? id) {
+    if (id == null) {
+      if (isHashtag) {
+        showHashtagDialog(context2!, _controller!, specialChar: true);
+      } else {
+        showMentionDialog(context2!, _controller!, specialChar: true);
+      }
+    }
+  }
+
   Future<void> _loadFromAssets() async {
     try {
       final result = await rootBundle.loadString('assets/sample_data.json');
+      //await rootBundle.loadString('assets/sample_empty_data.json');
       final doc = Document.fromJson(jsonDecode(result));
       setState(() {
         _controller = QuillController(
@@ -91,6 +106,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildWelcomeEditor(BuildContext context) {
+    context2 = context;
     var quillEditor = QuillEditor(
         controller: _controller!,
         scrollController: ScrollController(),
@@ -101,6 +117,7 @@ class _HomePageState extends State<HomePage> {
         placeholder: 'Add content',
         expands: false,
         padding: EdgeInsets.zero,
+        callBack: callBack,
         customStyles: DefaultStyles(
           h1: DefaultTextBlockStyle(
               const TextStyle(
@@ -114,7 +131,7 @@ class _HomePageState extends State<HomePage> {
               null),
           sizeSmall: const TextStyle(fontSize: 9),
         ));
-    if (kIsWeb) {
+    /*if (kIsWeb) {
       quillEditor = QuillEditor(
           controller: _controller!,
           scrollController: ScrollController(),
@@ -139,7 +156,7 @@ class _HomePageState extends State<HomePage> {
             sizeSmall: const TextStyle(fontSize: 9),
           ),
           embedBuilder: defaultEmbedBuilderWeb);
-    }
+    }*/
     var toolbar = QuillToolbar.basic(
         controller: _controller!, onImagePickCallback: _onImagePickCallback);
     final isDesktop = !kIsWeb && !Platform.isAndroid && !Platform.isIOS;

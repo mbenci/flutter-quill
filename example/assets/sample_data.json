@@ -80,6 +80,26 @@
       "insert":"web"
    },
    {
+      "insert":" "
+   },
+   {
+      "attributes":{
+         "hashtag":"123",
+         "color":"green"
+      },
+      "insert":"#hashtag"
+   },
+   {
+      "insert":" "
+   },
+   {
+      "attributes":{
+         "mention":"456",
+         "color":"red"
+      },
+      "insert":"@mention"
+   },
+   {
       "insert":" is not supported.\nYou are welcome to use "
    },
    {

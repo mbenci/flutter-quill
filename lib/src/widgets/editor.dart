@@ -115,47 +115,51 @@ Widget _defaultEmbedBuilder(BuildContext context, leaf.Embed node) {
 }
 
 class QuillEditor extends StatefulWidget {
-  const QuillEditor(
-      {required this.controller,
-      required this.focusNode,
-      required this.scrollController,
-      required this.scrollable,
-      required this.padding,
-      required this.autoFocus,
-      required this.readOnly,
-      required this.expands,
-      this.showCursor,
-      this.paintCursorAboveText,
-      this.placeholder,
-      this.enableInteractiveSelection = true,
-      this.scrollBottomInset = 0,
-      this.minHeight,
-      this.maxHeight,
-      this.customStyles,
-      this.textCapitalization = TextCapitalization.sentences,
-      this.keyboardAppearance = Brightness.light,
-      this.scrollPhysics,
-      this.onLaunchUrl,
-      this.onTapDown,
-      this.onTapUp,
-      this.onSingleLongTapStart,
-      this.onSingleLongTapMoveUpdate,
-      this.onSingleLongTapEnd,
-      this.embedBuilder = _defaultEmbedBuilder});
+  QuillEditor({
+    required this.controller,
+    required this.focusNode,
+    required this.scrollController,
+    required this.scrollable,
+    required this.padding,
+    required this.autoFocus,
+    required this.readOnly,
+    required this.expands,
+    required this.callBack,
+    this.showCursor,
+    this.paintCursorAboveText,
+    this.placeholder,
+    this.enableInteractiveSelection = true,
+    this.scrollBottomInset = 0,
+    this.minHeight,
+    this.maxHeight,
+    this.customStyles,
+    this.textCapitalization = TextCapitalization.sentences,
+    this.keyboardAppearance = Brightness.light,
+    this.scrollPhysics,
+    this.onLaunchUrl,
+    this.onTapDown,
+    this.onTapUp,
+    this.onSingleLongTapStart,
+    this.onSingleLongTapMoveUpdate,
+    this.onSingleLongTapEnd,
+    this.embedBuilder = _defaultEmbedBuilder,
+  });
 
   factory QuillEditor.basic({
     required QuillController controller,
     required bool readOnly,
   }) {
     return QuillEditor(
-        controller: controller,
-        scrollController: ScrollController(),
-        scrollable: true,
-        focusNode: FocusNode(),
-        autoFocus: true,
-        readOnly: readOnly,
-        expands: false,
-        padding: EdgeInsets.zero);
+      controller: controller,
+      scrollController: ScrollController(),
+      scrollable: true,
+      focusNode: FocusNode(),
+      autoFocus: true,
+      readOnly: readOnly,
+      expands: false,
+      padding: EdgeInsets.zero,
+      callBack: (isHashtag, id) {},
+    );
   }
 
   final QuillController controller;
@@ -200,6 +204,7 @@ class QuillEditor extends StatefulWidget {
       onSingleLongTapEnd;
 
   final EmbedBuilder embedBuilder;
+  final void Function(bool, String?) callBack;
 
   @override
   _QuillEditorState createState() => _QuillEditorState();
@@ -303,7 +308,8 @@ class _QuillEditorState extends State<QuillEditor>
           widget.keyboardAppearance,
           widget.enableInteractiveSelection,
           widget.scrollPhysics,
-          widget.embedBuilder),
+          widget.embedBuilder,
+          widget.callBack),
     );
   }
 
@@ -416,6 +422,18 @@ class _QuillEditorSelectionGestureDetectorBuilder
         launchUrl(link);
       }
       return false;
+    } else if (segment.style.containsKey(Attribute.hashtag.key) ||
+        segment.style.containsKey(Attribute.mention.key)) {
+      final attributes = segment.style.attributes;
+      if (segment.style.containsKey(Attribute.hashtag.key)) {
+        getEditor()!
+            .widget
+            .callback(true, segment.style.attributes['hashtag']!.value);
+      } else {
+        getEditor()!
+            .widget
+            .callback(false, segment.style.attributes['mention']!.value);
+      }
     }
     if (getEditor()!.widget.readOnly && segment.value is BlockEmbed) {
       final blockEmbed = segment.value as BlockEmbed;
